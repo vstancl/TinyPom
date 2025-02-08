@@ -10,11 +10,9 @@ class SettingsDialog : public QDialog
 
 public: 
 	SettingsDialog();
-	
-	void setVisible(bool visible) override;
+	~SettingsDialog();
 
 protected:
-	void closeEvent(QCloseEvent* event) override;
 
 private:
 	Ui::SettingsDialog* ui;

@@ -22,6 +22,7 @@ endif()
 
 # Set project details
 project(TinyPom LANGUAGES CXX)
+set(PROJECT_NAME TinyPom)
 
 # Include project compilation configuration
 #include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/settings.cmake)
@@ -120,25 +121,66 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_BINARY_DIR})
 include_directories(${CMAKE_BINARY_DIR})  # Add to include paths
 
 # Set the target executable
-add_executable(TinyPom
-    src/main.cpp
-    src/mainwindow.cpp
-    src/mainwindow.h
-    src/mainwindow.ui
-    ${GENERATED_UI_FILES}  # Ensure processed .ui file is included
-)
+# Set the necessary flags based on the platform
+if(WIN32)
+    add_executable(${PROJECT_NAME} WIN32
+        src/main.cpp
+        src/mainwindow.cpp
+        src/mainwindow.h
+        src/mainwindow.ui
+    )
+elseif(APPLE)
+    add_executable(${PROJECT_NAME}
+        src/main.cpp
+        src/mainwindow.cpp
+        src/mainwindow.h
+        src/mainwindow.ui
+    )
+else()  # For Linux, don't need special flags
+    add_executable(${PROJECT_NAME}
+        src/main.cpp
+        src/mainwindow.cpp
+        src/mainwindow.h
+        src/mainwindow.ui
+    )
+endif()
 
 # Link Qt libraries (Qt5 or Qt6)
 if(QT_VERSION EQUAL 6)
-    target_link_libraries(TinyPom PRIVATE Qt6::Widgets)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
 else()
-    target_link_libraries(TinyPom PRIVATE Qt5::Widgets)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets)
 endif()
 
+# Ensure the Qt DLLs are copied next to the executable
+if(WIN32)
+    set(NEEDED_QT_LIBS)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Copying Qt DLLs for $<CONFIG> build..."
+        
+        # Copy Qt DLLs based on the build configuration
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE_DIR:Qt${QT_VERSION}::Widgets>/Qt${QT_VERSION}Widgets$<$<CONFIG:Debug>:d>.dll"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+        
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE_DIR:Qt${QT_VERSION}::Core>/Qt${QT_VERSION}Core$<$<CONFIG:Debug>:d>.dll"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+        
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE_DIR:Qt${QT_VERSION}::Gui>/Qt${QT_VERSION}Gui$<$<CONFIG:Debug>:d>.dll"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
 
-
-
+        # Copy Qt platform plugin (qwindows.dll) into 'platforms/' subdirectory
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PROJECT_NAME}>/platforms"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE_DIR:Qt${QT_VERSION}::Core>/../plugins/platforms/qwindows$<$<CONFIG:Debug>:d>.dll"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/platforms/"
+            
+        COMMENT "Copying required Qt DLLs..."
+    )
+endif()
 
 # Installation (optional)
-install(TARGETS TinyPom DESTINATION bin)
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
