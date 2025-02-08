@@ -1,0 +1,144 @@
+cmake_minimum_required(VERSION 3.16)
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan_version.cmake)
+
+option(BUILD_CONAN_INSTALL "Run conan install as part of the config stage." ON)
+
+#==============================================================================
+# BEGIN OF THE CONAN 2.x PART
+#==============================================================================
+
+if(${BUILD_CONAN_INSTALL} AND ${CONAN_VERSION_MAJOR} EQUAL 2)
+  # Fix: ommited "auto-detect" from CONAN_HOST_PROFILE as it was not detecting CXX standard correctly (gnu20 does not exist for MSVC)
+  set(CONAN_HOST_PROFILE "default" CACHE STRING "Conan host profile")
+
+  # set conan2.cmake as script that will be injected during "project()" (must be defined before project())
+  set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan2.cmake)
+endif()
+
+#==============================================================================
+# END OF THE CONAN 2.x PART
+#==============================================================================
+
+# Set project details
+project(TinyPom LANGUAGES CXX)
+
+# Include project compilation configuration
+#include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/settings.cmake)
+
+# Include project warning configuration
+#include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/warnings.cmake)
+
+#==============================================================================
+# BEGIN OF THE CONAN 1.x PART
+#==============================================================================
+# Note: Conan 1.x script must be called AFTER project() is defined
+if (${BUILD_CONAN_INSTALL} AND ${CONAN_VERSION_MAJOR} EQUAL 1)
+  set(BUILD_CONAN_INSTALL_FOLDER "${CMAKE_CURRENT_BINARY_DIR}/conan" CACHE PATH "Location where the conan config files are installed. Note that the packages itself are downloaded to ~/.conan folder.")
+
+  # Include custom VS fixed conan.cmake file
+  include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/conan.cmake)
+
+  # Install libraries for each configuration type
+  # This downloads the libs and generates *.cmake files into the build/conan folder
+  foreach (TYPE ${CMAKE_CONFIGURATION_TYPES})
+    #Ignore profile and detect settings from the current environment.
+    conan_cmake_autodetect(BUILD_SETTINGS BUILD_TYPE ${TYPE})
+    conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_CURRENT_SOURCE_DIR}
+                        BUILD missing
+                        INSTALL_FOLDER ${BUILD_CONAN_INSTALL_FOLDER}
+                        OUTPUT_FOLDER ${CMAKE_BINARY_DIR}
+                        SETTINGS ${BUILD_SETTINGS}
+                        GENERATOR "cmake_find_package_multi"
+    )
+  endforeach()
+
+  # Append conan install folder as a search path for find_package
+  list(APPEND CMAKE_PREFIX_PATH ${BUILD_CONAN_INSTALL_FOLDER})
+endif()
+
+#==============================================================================
+# END OF THE CONAN 1.x PART
+#==============================================================================
+
+set(RUNTIME_DIR ${CMAKE_CURRENT_BINARY_DIR}/bin/$<CONFIG>)
+set(TEST_RUNTIME_DIR "${CMAKE_CURRENT_BINARY_DIR}/bin/tests/$<CONFIG>")
+
+
+# Require C++17 (or newer if needed)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Set output directories for all build files
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+# Create a dedicated "build" directory for CMake-generated files
+set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
+set(CMAKE_CACHEFILE_DIR ${CMAKE_BINARY_DIR})
+set(CMAKE_TEMP_DIR ${CMAKE_BINARY_DIR})
+
+# Detect if Conan is being used
+if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+    include("${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+    set(USE_CONAN TRUE)
+else()
+    set(USE_CONAN FALSE)
+endif()
+
+# Find Qt (Conan or system)
+if(USE_CONAN)
+    # Conan installs Qt under its package structure
+    find_package(Qt6 COMPONENTS Widgets REQUIRED)
+    if(NOT Qt6_FOUND)
+        find_package(Qt5 COMPONENTS Widgets REQUIRED)
+        set(QT_VERSION 5)
+    else()
+        set(QT_VERSION 6)
+    endif()
+else()
+    find_package(Qt6 COMPONENTS Widgets QUIET)
+    if(NOT Qt6_FOUND)
+        message(STATUS "Qt6 not found, falling back to Qt5")
+        find_package(Qt5 COMPONENTS Widgets REQUIRED)
+        set(QT_VERSION 5)
+    else()
+        set(QT_VERSION 6)
+    endif()
+endif()
+
+# Enable automoc, autouic, and autorcc
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+set(UI_FILES src/mainwindow.ui)
+qt_wrap_ui(GENERATED_UI_FILES ${UI_FILES})  # Ensure UIC processing
+
+set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR})  # Add to include paths
+
+# Set the target executable
+add_executable(TinyPom
+    src/main.cpp
+    src/mainwindow.cpp
+    src/mainwindow.h
+    src/mainwindow.ui
+    ${GENERATED_UI_FILES}  # Ensure processed .ui file is included
+)
+
+# Link Qt libraries (Qt5 or Qt6)
+if(QT_VERSION EQUAL 6)
+    target_link_libraries(TinyPom PRIVATE Qt6::Widgets)
+else()
+    target_link_libraries(TinyPom PRIVATE Qt5::Widgets)
+endif()
+
+
+
+
+
+# Installation (optional)
+install(TARGETS TinyPom DESTINATION bin)
+
