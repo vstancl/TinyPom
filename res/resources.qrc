@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="png">
+    <file>images/bigPomodoro.png</file>
+    <file>images/smallPomodoro.png</file>
+  </qresource>
+</RCC>

@@ -109,6 +109,13 @@ else()
     endif()
 endif()
 
+# Ensure Qt resources are compiled
+if(QT_VERSION EQUAL 6)
+    qt_add_resources(RESOURCE_FILES res/resources.qrc)
+else()
+    qt5_add_resources(RESOURCE_FILES res/resources.qrc)
+endif()
+
 # Enable automoc, autouic, and autorcc
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -128,6 +135,7 @@ if(WIN32)
         src/mainwindow.cpp
         src/mainwindow.h
         src/mainwindow.ui
+        ${RESOURCE_FILES}  # Include compiled resource file
     )
 elseif(APPLE)
     add_executable(${PROJECT_NAME}
@@ -135,6 +143,7 @@ elseif(APPLE)
         src/mainwindow.cpp
         src/mainwindow.h
         src/mainwindow.ui
+        ${RESOURCE_FILES}  # Include compiled resource file
     )
 else()  # For Linux, don't need special flags
     add_executable(${PROJECT_NAME}
@@ -142,6 +151,7 @@ else()  # For Linux, don't need special flags
         src/mainwindow.cpp
         src/mainwindow.h
         src/mainwindow.ui
+        ${RESOURCE_FILES}  # Include compiled resource file
     )
 endif()
 
