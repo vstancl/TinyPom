@@ -1,6 +1,0 @@
-[requires]
-qt/6.8.2  # Adjust version as needed
-
-[generators]
-cmake_find_package
-cmake_paths

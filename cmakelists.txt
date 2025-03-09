@@ -4,36 +4,13 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan_version.cmake)
 
 option(BUILD_CONAN_INSTALL "Run conan install as part of the config stage." ON)
 
-#==============================================================================
-# BEGIN OF THE CONAN 2.x PART
-#==============================================================================
-
-if(${BUILD_CONAN_INSTALL} AND ${CONAN_VERSION_MAJOR} EQUAL 2)
-  # Fix: ommited "auto-detect" from CONAN_HOST_PROFILE as it was not detecting CXX standard correctly (gnu20 does not exist for MSVC)
-  set(CONAN_HOST_PROFILE "default" CACHE STRING "Conan host profile")
-
-  # set conan2.cmake as script that will be injected during "project()" (must be defined before project())
-  set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan2.cmake)
-endif()
-
-#==============================================================================
-# END OF THE CONAN 2.x PART
-#==============================================================================
-
 # Set project details
 project(TinyPom LANGUAGES CXX)
 set(PROJECT_NAME TinyPom)
 
-# Include project compilation configuration
-#include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/settings.cmake)
+#------------------------------------------------------------------------
+# Conan related stuff...
 
-# Include project warning configuration
-#include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/warnings.cmake)
-
-#==============================================================================
-# BEGIN OF THE CONAN 1.x PART
-#==============================================================================
-# Note: Conan 1.x script must be called AFTER project() is defined
 if (${BUILD_CONAN_INSTALL} AND ${CONAN_VERSION_MAJOR} EQUAL 1)
   set(BUILD_CONAN_INSTALL_FOLDER "${CMAKE_CURRENT_BINARY_DIR}/conan" CACHE PATH "Location where the conan config files are installed. Note that the packages itself are downloaded to ~/.conan folder.")
 
@@ -58,9 +35,8 @@ if (${BUILD_CONAN_INSTALL} AND ${CONAN_VERSION_MAJOR} EQUAL 1)
   list(APPEND CMAKE_PREFIX_PATH ${BUILD_CONAN_INSTALL_FOLDER})
 endif()
 
-#==============================================================================
-# END OF THE CONAN 1.x PART
-#==============================================================================
+#------------------------------------------------------------------------
+# General project stuff
 
 set(RUNTIME_DIR ${CMAKE_CURRENT_BINARY_DIR}/bin/$<CONFIG>)
 set(TEST_RUNTIME_DIR "${CMAKE_CURRENT_BINARY_DIR}/bin/tests/$<CONFIG>")
@@ -89,24 +65,14 @@ else()
 endif()
 
 # Find Qt (Conan or system)
-if(USE_CONAN)
-    # Conan installs Qt under its package structure
-    find_package(Qt6 COMPONENTS Widgets REQUIRED)
-    if(NOT Qt6_FOUND)
-        find_package(Qt5 COMPONENTS Widgets REQUIRED)
-        set(QT_VERSION 5)
-    else()
-        set(QT_VERSION 6)
-    endif()
+# Conan installs Qt under its package structure
+find_package(Qt6 COMPONENTS REQUIRED Widgets Multimedia MultimediaWidgets)
+
+if(NOT Qt6_FOUND)
+    find_package(Qt5 COMPONENTS REQUIRED Widgets Multimedia MultimediaWidgets)
+    set(QT_VERSION 5)
 else()
-    find_package(Qt6 COMPONENTS Widgets QUIET)
-    if(NOT Qt6_FOUND)
-        message(STATUS "Qt6 not found, falling back to Qt5")
-        find_package(Qt5 COMPONENTS Widgets REQUIRED)
-        set(QT_VERSION 5)
-    else()
-        set(QT_VERSION 6)
-    endif()
+    set(QT_VERSION 6)
 endif()
 
 # Ensure Qt resources are compiled
@@ -121,74 +87,44 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-set(UI_FILES src/mainwindow.ui)
+file(GLOB_RECURSE UI_FILES "${CMAKE_SOURCE_DIR}/src/*.ui")  # Collect all .ui files
 qt_wrap_ui(GENERATED_UI_FILES ${UI_FILES})  # Ensure UIC processing
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_BINARY_DIR})
 include_directories(${CMAKE_BINARY_DIR})  # Add to include paths
 
+# Find all sources and headers of the project
+file(GLOB_RECURSE SRC_HEADER_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp" "${CMAKE_SOURCE_DIR}/src/*.h")  # Collect all .cpp and .h files
+
+qt_add_resources(APP_RESOURCES resources.qrc)
+
 # Set the target executable
 # Set the necessary flags based on the platform
 if(WIN32)
     add_executable(${PROJECT_NAME} WIN32
-        src/main.cpp
-        src/mainwindow.cpp
-        src/mainwindow.h
-        src/mainwindow.ui
+        ${SRC_HEADER_FILES}
+        ${UI_FILES}
         ${RESOURCE_FILES}  # Include compiled resource file
     )
 elseif(APPLE)
     add_executable(${PROJECT_NAME}
-        src/main.cpp
-        src/mainwindow.cpp
-        src/mainwindow.h
-        src/mainwindow.ui
+        ${SRC_HEADER_FILES}
+        ${UI_FILES}
         ${RESOURCE_FILES}  # Include compiled resource file
     )
 else()  # For Linux, don't need special flags
     add_executable(${PROJECT_NAME}
-        src/main.cpp
-        src/mainwindow.cpp
-        src/mainwindow.h
-        src/mainwindow.ui
+        ${SRC_HEADER_FILES}
+        ${UI_FILES}
         ${RESOURCE_FILES}  # Include compiled resource file
     )
 endif()
 
 # Link Qt libraries (Qt5 or Qt6)
 if(QT_VERSION EQUAL 6)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Multimedia)
 else()
-    target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets)
-endif()
-
-# Ensure the Qt DLLs are copied next to the executable
-if(WIN32)
-    set(NEEDED_QT_LIBS)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Copying Qt DLLs for $<CONFIG> build..."
-        
-        # Copy Qt DLLs based on the build configuration
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE_DIR:Qt${QT_VERSION}::Widgets>/Qt${QT_VERSION}Widgets$<$<CONFIG:Debug>:d>.dll"
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
-        
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE_DIR:Qt${QT_VERSION}::Core>/Qt${QT_VERSION}Core$<$<CONFIG:Debug>:d>.dll"
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
-        
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE_DIR:Qt${QT_VERSION}::Gui>/Qt${QT_VERSION}Gui$<$<CONFIG:Debug>:d>.dll"
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
-
-        # Copy Qt platform plugin (qwindows.dll) into 'platforms/' subdirectory
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PROJECT_NAME}>/platforms"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE_DIR:Qt${QT_VERSION}::Core>/../plugins/platforms/qwindows$<$<CONFIG:Debug>:d>.dll"
-            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/platforms/"
-            
-        COMMENT "Copying required Qt DLLs..."
-    )
+    target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets Qt5::Multimedia)
 endif()
 
 # Installation (optional)
