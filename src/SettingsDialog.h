@@ -32,6 +32,7 @@ protected slots:
 	void on_pushButtonHide_clicked();
 	void on_pushButtonStartTimer_clicked();
 	void on_pushButtonPauseTimer_clicked();
+	void on_pushButtonExit_clicked();
 
 	void on_spinBoxTimer_valueChanged(int value);
 protected:

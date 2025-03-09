@@ -15,7 +15,7 @@
 #include <QDebug>
 #include <QDirIterator>
 
-#include "SettingsMaintainer.h";
+#include "SettingsMaintainer.h"
 
 
 SettingsDialog::SettingsDialog()
@@ -128,6 +128,11 @@ void SettingsDialog::on_pushButtonStartTimer_clicked()
 void SettingsDialog::on_pushButtonPauseTimer_clicked()
 {
 	onPauseTimer();
+}
+
+void SettingsDialog::on_pushButtonExit_clicked()
+{
+	QCoreApplication::quit();
 }
 
 void SettingsDialog::on_spinBoxTimer_valueChanged(int value)
