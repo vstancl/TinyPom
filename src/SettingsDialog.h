@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QDialog>
+#include <QSystemTrayIcon>
 
-class QSystemTrayIcon;
 class PausableTimer;
 class QMediaPlayer;
 class QAudioOutput;
@@ -35,6 +35,8 @@ protected slots:
 	void on_pushButtonExit_clicked();
 
 	void on_spinBoxTimer_valueChanged(int value);
+
+	void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
 protected:
 
 	void initializeTrayIcon();

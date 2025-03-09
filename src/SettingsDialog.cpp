@@ -1,7 +1,6 @@
 #include "SettingsDialog.h"
 #include "ui_settingsdialog.h"
 
-#include <QSystemTrayIcon>
 #include <QMenu>
 #include <QCloseEvent>
 #include <QMediaPlayer>
@@ -141,6 +140,13 @@ void SettingsDialog::on_spinBoxTimer_valueChanged(int value)
 	settings.setTimerDurationMin(value);
 }
 
+void SettingsDialog::onTrayActivated(QSystemTrayIcon::ActivationReason reason)
+{
+	if (reason == QSystemTrayIcon::DoubleClick && !this->isVisible()) {
+		onShowSettings();
+	}
+}
+
 void SettingsDialog::initializeTrayIcon()
 {
 	auto menu = new QMenu(this);
@@ -151,6 +157,9 @@ void SettingsDialog::initializeTrayIcon()
 
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setContextMenu(menu);
+
+	// Connect the activated signal
+	connect(trayIcon, &QSystemTrayIcon::activated, this, &SettingsDialog::onTrayActivated);
 
 	setIcon();
 	trayIcon->show();
