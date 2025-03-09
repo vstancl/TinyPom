@@ -29,6 +29,7 @@ protected slots:
 	void onPauseTimer();
 	void onShowSettings();
 	void onTimeout();
+	void onTick(int elapsedTime, int remainingTime);
 	void on_pushButtonHide_clicked();
 	void on_pushButtonStartTimer_clicked();
 	void on_pushButtonPauseTimer_clicked();

@@ -34,7 +34,7 @@ SettingsDialog::SettingsDialog()
 
 	timer = new PausableTimer(1000, this);
 	connect(timer, &PausableTimer::timeout, this, &SettingsDialog::onTimeout);
-	
+	connect(timer, &PausableTimer::tick, this, &SettingsDialog::onTick);
 }
 
 SettingsDialog::~SettingsDialog()
@@ -111,7 +111,13 @@ void SettingsDialog::onShowSettings()
 void SettingsDialog::onTimeout()
 {
 	pauseTimer->setEnabled(false);
+	trayIcon->setToolTip("");
 	playSound();
+}
+
+void SettingsDialog::onTick(int elapsedTime, int remainingTime)
+{
+	trayIcon->setToolTip(PausableTimer::formatTime(remainingTime));
 }
 
 void SettingsDialog::on_pushButtonHide_clicked()

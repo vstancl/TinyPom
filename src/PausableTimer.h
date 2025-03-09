@@ -19,14 +19,26 @@ public:
 
 	bool isPaused() const;
 
+	void setTickDurationMSec(int tickDuration) { m_tickDuration = tickDuration; }
+	int getTickDurationMSec() const { return m_tickDuration; }
+
+	static QString formatTime(int milliseconds);
+
+private slots:
+	void on_updateTick();  // Slot for tick timer
+	void on_timeout();
+
 signals:
 	void timeout();
+	void tick(int currentTime, int remainingTime);
+
 
 private:
-	bool paused;
-	QTimer timer;
-	qint64 startTime = 0;
-	int totalDuration;
-	int remainingTime;
+	bool m_paused;
+	QTimer m_timer, m_tickTimer;
+	qint64 m_startTime = 0;
+	int m_totalDuration;
+	int m_remainingTime;
+	int m_tickDuration;
 };
 

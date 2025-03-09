@@ -2,12 +2,13 @@ What is done:
 - Store settings to QSettings
 - Close app on Close button in SW.
 - Show settings window on double click on tray icon
+- Connect timer duration spin to actual object
+- Show current time
 
 WIP:
 
 What should be done:
 - Play sound from resources or from app folder
-- Connect timer duration spin to actual object
 - System shortcut
-- Show current time
 - Modifiable shortcut
+- Colored icon
