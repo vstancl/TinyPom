@@ -18,7 +18,7 @@ void PausableTimer::setDuration(int duration)
 
 void PausableTimer::setDurationMinutes(int duration)
 {
-	setDuration(1000 * duration);
+	setDuration(60 * 1000 * duration);
 }
 
 void PausableTimer::start(int duration /*= -1*/)

@@ -9,6 +9,9 @@ int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 
+	QCoreApplication::setOrganizationName("TinyMuff");
+	QCoreApplication::setApplicationName("TinyPom");
+
 	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
 		auto choice = QMessageBox::critical(nullptr, QObject::tr("Systray"),
 			QObject::tr("I couldn't detect any system tray on this system."),

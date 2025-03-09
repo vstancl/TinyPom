@@ -33,6 +33,7 @@ protected slots:
 	void on_pushButtonStartTimer_clicked();
 	void on_pushButtonPauseTimer_clicked();
 
+	void on_spinBoxTimer_valueChanged(int value);
 protected:
 
 	void initializeTrayIcon();

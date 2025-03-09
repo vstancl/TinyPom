@@ -15,6 +15,8 @@
 #include <QDebug>
 #include <QDirIterator>
 
+#include "SettingsMaintainer.h";
+
 
 SettingsDialog::SettingsDialog()
 	: ui(new Ui::SettingsDialog)
@@ -31,7 +33,6 @@ SettingsDialog::SettingsDialog()
 	createActions();
 	initializeTrayIcon();
 
-	// # TODO - store currently set duration to QSettings
 	timer = new PausableTimer(1000, this);
 	connect(timer, &PausableTimer::timeout, this, &SettingsDialog::onTimeout);
 	
@@ -45,9 +46,18 @@ SettingsDialog::~SettingsDialog()
 void SettingsDialog::setVisible(bool visible)
 {
 	if (visible)
+	{
 		showSettings->setText(tr("Hide Settings"));
+
+		// Fill dialog from settings
+		SettingsMaintainer settings;
+		ui->spinBoxTimer->setValue(settings.getTimerDurationMin());
+
+	}
 	else
+	{
 		showSettings->setText(tr("Show Settings"));
+	}
 
 	QDialog::setVisible(visible);
 }
@@ -71,6 +81,8 @@ void SettingsDialog::closeEvent(QCloseEvent* event)
 
 void SettingsDialog::onResetTimer()
 {
+	SettingsMaintainer settings;
+	timer->setDurationMinutes(settings.getTimerDurationMin());
 	timer->start();
 	pauseTimer->setEnabled(true);
 }
@@ -116,6 +128,12 @@ void SettingsDialog::on_pushButtonStartTimer_clicked()
 void SettingsDialog::on_pushButtonPauseTimer_clicked()
 {
 	onPauseTimer();
+}
+
+void SettingsDialog::on_spinBoxTimer_valueChanged(int value)
+{
+	SettingsMaintainer settings;
+	settings.setTimerDurationMin(value);
 }
 
 void SettingsDialog::initializeTrayIcon()
@@ -187,52 +205,6 @@ void SettingsDialog::setIcon()
 
 void SettingsDialog::playSound()
 {
-
-// 	qDebug() << QMediaPlayer::supportedMimeTypes();
-// 	QSoundEffect* effect = new QSoundEffect;
-// 	effect->setSource(QUrl("qrc:/sounds/campana-40773.wav"));
-// 	effect->setVolume(1.0);
-// 	effect->play();
-// 
-// 	auto source = QUrl("qrc:/sounds/campana-40773.wav");
- 	
-//  	if (!source.isValid())
-//  		return;
-
-// 	QDirIterator it(":", QDirIterator::Subdirectories);
-// 	while (it.hasNext()) {
-// 		qDebug() << "Resource:" << it.next();
-// 	}
-
-// 	{
-// 		QFile file(":/mp3/mp3/campana-40773.mp3");
-// 		if (!file.exists()) {
-// 			qDebug() << "Resource file not found!";
-// 		}
-// 		else {
-// 			qDebug() << "Resource file found!";
-// 		}
-// 	}
-// 
-// 	// Define temporary file path
-// 	QString tempPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/music.mp3";
-// 
-// 	// Extract the file
-// 	QFile file(resourcePath);
-// 	if (file.exists()) {
-// 		if (QFile::copy(resourcePath, tempPath)) {
-// 			qDebug() << "File copied to:" << tempPath;
-// 		}
-// 		else {
-// 			qDebug() << "Failed to copy file!";
-// 			return;
-// 		}
-// 	}
-// 	else {
-// 		qDebug() << "Resource file not found!";
-// 		return;
-// 	}
-
 	auto source = QUrl::fromLocalFile("C:/1 Personal/1 Projects/SmallApps/TinyPomodoro/res/mp3/campana-40773.mp3");
 //	auto source = QUrl("qrc:///mp3/mp3/campana-40773.mp3");
 	if (!source.isValid())

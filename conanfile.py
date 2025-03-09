@@ -55,4 +55,7 @@ class TinyPom(ConanFile):
         for dll in qt_multimedia_plugin_dll:
             self.copy(dll, dst=bin_folder + "/plugins/multimedia/", src="plugins/multimedia")
         
+        # Copy the correct platform plugin
+        self.copy("qwindows" + suffix + ".dll", dst=bin_folder + "/plugins/platforms/", src="plugins/platforms/")  # Windows
+        self.copy("libqxcb.so", bin_folder + "/plugins/platforms/", "bin/plugins/platforms/")  # Linux (if applicable)
         
