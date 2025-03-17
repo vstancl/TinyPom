@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.30)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan_version.cmake)
+
 
 option(BUILD_CONAN_INSTALL "Run conan install as part of the config stage." ON)
 
@@ -34,6 +35,13 @@ if (${BUILD_CONAN_INSTALL} AND ${CONAN_VERSION_MAJOR} EQUAL 1)
   # Append conan install folder as a search path for find_package
   list(APPEND CMAKE_PREFIX_PATH ${BUILD_CONAN_INSTALL_FOLDER})
 endif()
+
+#------------------------------------------------------------------------
+# QHotKey stuff
+
+find_package(QHotkey REQUIRED)
+
+message(STATUS "QHotkey_INCLUDE_DIRS: ${QHotkey_INCLUDE_DIRS}")
 
 #------------------------------------------------------------------------
 # General project stuff
@@ -82,6 +90,8 @@ else()
     qt5_add_resources(RESOURCE_FILES res/resources.qrc)
 endif()
 
+#------------------------------------------------------------------------
+
 # Enable automoc, autouic, and autorcc
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -120,12 +130,16 @@ else()  # For Linux, don't need special flags
     )
 endif()
 
+target_include_directories(${PROJECT_NAME} PRIVATE ${QHOTKEY_DIR})
+
 # Link Qt libraries (Qt5 or Qt6)
 if(QT_VERSION EQUAL 6)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Multimedia)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${CONAN_LIBS} qhotkey::qhotkey Qt6::Widgets Qt6::Multimedia)
 else()
-    target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets Qt5::Multimedia)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${CONAN_LIBS} qhotkey::qhotkey Qt5::Widgets Qt5::Multimedia)
 endif()
+
+message(STATUS "Include directories: ${CONAN_INCLUDE_DIRS}")
 
 # Installation (optional)
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

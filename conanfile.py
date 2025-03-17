@@ -5,9 +5,10 @@ class TinyPom(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     requires = (
                 "qt/6.7.1", # In this version the Qt Multiedia works
+                "qhotkey/1.4.2",
                 #"glib/2.81.0"
                 ) 
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "cmake", "CMakeDeps", "CMakeToolchain"
     
     # Define the options you want to enable
     default_options = {
