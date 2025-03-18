@@ -5,28 +5,6 @@
 #include <QMessageBox>
 #include <QResource>
 
-#include <QHotkey>
-#include <QKeySequence>
-#include <QSettings>
-
-QSharedPointer<QHotkey> registerHotKeyIfPresent(QApplication *app, SettingsDialog *dialog)
-{
-	QSettings settings;
-	// #TODO add hotkey sequence combination reading from settings
-	QSharedPointer<QHotkey> hotkey(new QHotkey(QKeySequence("Ctrl+Alt+P"), true, app));
-
-	qDebug() << "Is segistered:" << hotkey->isRegistered();
-
-	QObject::connect(hotkey.get(), &QHotkey::activated,
-		[&]() {
-			dialog->showNormal();  // Show the window
-			dialog->raise();
-			dialog->activateWindow();
-		}
-	);
-
-	return hotkey;
-}
 
 int main(int argc, char** argv)
 {
@@ -49,7 +27,6 @@ int main(int argc, char** argv)
 	QApplication::setQuitOnLastWindowClosed(false);
 
 	SettingsDialog dialog;
-	auto hk(registerHotKeyIfPresent(&app, &dialog));
 
 	return app.exec();
 }

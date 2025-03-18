@@ -36,6 +36,15 @@ SettingsDialog::SettingsDialog()
 	timer = new PausableTimer(1000, this);
 	connect(timer, &PausableTimer::timeout, this, &SettingsDialog::onTimeout);
 	connect(timer, &PausableTimer::tick, this, &SettingsDialog::onTick);
+
+	// Hotkeys scannig signals
+	connect(ui->lineEditShowWindowHotkey, &HotkeyLineEdit::hotkeyChanged, this, &SettingsDialog::on_hotkeyShowWindow);
+	registerShowWindowHotkey();
+
+	// Fill hotkey edits
+	QSettings settings;
+	QKeySequence keySeqShowWindow = settings.value("hotkey/sequence/ShowWindow").value<QKeySequence>();
+	ui->lineEditShowWindowHotkey->setKeySequence(keySeqShowWindow);
 }
 
 SettingsDialog::~SettingsDialog()
@@ -57,6 +66,7 @@ void SettingsDialog::setVisible(bool visible)
 	else
 	{
 		showSettings->setText(tr("Show Settings"));
+		disableHotkeysScanning();
 	}
 
 	QDialog::setVisible(visible);
@@ -141,6 +151,15 @@ void SettingsDialog::on_pushButtonExit_clicked()
 	QCoreApplication::quit();
 }
 
+void SettingsDialog::on_pushButtonEditShowWindowHotkey_clicked()
+{
+	// Disable other windows scanning
+	disableHotkeysScanning();
+	/** \brief	Default constructor */
+	ui->lineEditShowWindowHotkey->setFocus();
+	ui->lineEditShowWindowHotkey->setScanning(true);
+}
+
 void SettingsDialog::on_spinBoxTimer_valueChanged(int value)
 {
 	SettingsMaintainer settings;
@@ -152,6 +171,16 @@ void SettingsDialog::onTrayActivated(QSystemTrayIcon::ActivationReason reason)
 	if (reason == QSystemTrayIcon::DoubleClick && !this->isVisible()) {
 		onShowSettings();
 	}
+}
+
+void SettingsDialog::on_hotkeyShowWindow(const QList<int>& keys, Qt::KeyboardModifiers modifiers)
+{
+	QKeySequence keySeq(modifiers | keys.last());
+
+	QSettings settings;
+	settings.setValue("hotkey/sequence/ShowWindow", keySeq);
+
+	registerShowWindowHotkey();
 }
 
 void SettingsDialog::initializeTrayIcon()
@@ -234,5 +263,51 @@ void SettingsDialog::playSound()
 	player->setSource(source);
  	audioOutput->setVolume(100);
  	player->play();
+}
+
+void SettingsDialog::disableHotkeysScanning()
+{
+	ui->lineEditShowWindowHotkey->setScanning(false);
+}
+
+void SettingsDialog::registerShowWindowHotkey()
+{
+	// Reading the key sequence
+	QSettings settings;
+	QKeySequence keySeq = settings.value("hotkey/sequence/ShowWindow").value<QKeySequence>();
+
+	m_showWindowHotkey = registerHotKeyIfPresent(keySeq);
+}
+
+QSharedPointer<QHotkey> SettingsDialog::registerHotKeyIfPresent(const QKeySequence& keySequence)
+{
+	// Get the application pointer
+	QApplication* app = qobject_cast<QApplication*>(QApplication::instance());
+	if (!app)
+		return nullptr;
+
+	QSettings settings;
+	// #TODO add hotkey sequence combination reading from settings
+	QSharedPointer<QHotkey> hotkey(new QHotkey(keySequence, true, app));
+
+	qDebug() << "Is segistered:" << hotkey->isRegistered();
+
+	QObject::connect(hotkey.get(), &QHotkey::activated,
+		[&]() {
+
+			if (this->isVisible())
+			{
+				this->hide();
+			}
+			else
+			{
+				this->showNormal();  // Show the window
+				this->raise();
+				this->activateWindow();
+			}
+		}
+	);
+
+	return hotkey;
 }
 

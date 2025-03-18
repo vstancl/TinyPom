@@ -6,9 +6,12 @@ What is done:
 - Show current time
 
 WIP:
+- System shortcut
+- Modifiable shortcut
+	- Add shortcuts for reset timer and pause timer
+	- Do testing
 
 What should be done:
 - Play sound from resources or from app folder
-- System shortcut
-- Modifiable shortcut
 - Colored icon
+- Skin

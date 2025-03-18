@@ -2,6 +2,9 @@
 
 #include <QDialog>
 #include <QSystemTrayIcon>
+#include <QHotkey>
+#include <QKeySequence>
+#include <QSettings>
 
 class PausableTimer;
 class QMediaPlayer;
@@ -34,18 +37,25 @@ protected slots:
 	void on_pushButtonStartTimer_clicked();
 	void on_pushButtonPauseTimer_clicked();
 	void on_pushButtonExit_clicked();
-
+	void on_pushButtonEditShowWindowHotkey_clicked();
 	void on_spinBoxTimer_valueChanged(int value);
 
 	void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
 protected:
 
+	void on_hotkeyShowWindow(const QList<int>& keys, Qt::KeyboardModifiers modifiers);
 	void initializeTrayIcon();
 
 	void createActions();
 	void connectUI();
 	void setIcon();
 	void playSound();
+	void disableHotkeysScanning();
+
+	void registerShowWindowHotkey();
+
+	QSharedPointer<QHotkey> registerHotKeyIfPresent(const QKeySequence &keySequence);
+
 private:
 	Ui::SettingsDialog* ui;
 
@@ -59,4 +69,6 @@ private:
 	PausableTimer* timer;
 	QMediaPlayer* player;
 	QAudioOutput * audioOutput;
+
+	QSharedPointer<QHotkey> m_showWindowHotkey;
 };
