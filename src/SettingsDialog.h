@@ -3,12 +3,13 @@
 #include <QDialog>
 #include <QSystemTrayIcon>
 #include <QHotkey>
-#include <QKeySequence>
 #include <QSettings>
+#include "SettingsMaintainer.h"
 
 class PausableTimer;
 class QMediaPlayer;
 class QAudioOutput;
+class HotkeyLineEdit;
 
 namespace Ui {
 	class SettingsDialog;
@@ -37,13 +38,18 @@ protected slots:
 	void on_pushButtonStartTimer_clicked();
 	void on_pushButtonPauseTimer_clicked();
 	void on_pushButtonExit_clicked();
+	
 	void on_pushButtonEditShowWindowHotkey_clicked();
+	void on_pushButtonEditResetTimerHotkey_clicked();
+	void on_pushButtonEditPauseTimerHotkey_clicked();
+
 	void on_spinBoxTimer_valueChanged(int value);
 
 	void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
 protected:
 
-	void on_hotkeyShowWindow(const QList<int>& keys, Qt::KeyboardModifiers modifiers);
+	void on_hotkeySet(const QList<int>& keys, Qt::KeyboardModifiers modifiers, HotkeyLineEdit *sender);
+
 	void initializeTrayIcon();
 
 	void createActions();
@@ -53,8 +59,11 @@ protected:
 	void disableHotkeysScanning();
 
 	void registerShowWindowHotkey();
+	void registerResetTimerHotkey();
+	void registerPauseTimerHotkey();
 
-	QSharedPointer<QHotkey> registerHotKeyIfPresent(const QKeySequence &keySequence);
+
+	QSharedPointer<QHotkey> registerHotKeyIfPresent(const QKeySequence &keySequence, std::function<void()> callbackFunction);
 
 private:
 	Ui::SettingsDialog* ui;
@@ -70,5 +79,7 @@ private:
 	QMediaPlayer* player;
 	QAudioOutput * audioOutput;
 
-	QSharedPointer<QHotkey> m_showWindowHotkey;
+	SettingsMaintainer m_settings;
+
+	QSharedPointer<QHotkey> m_showWindowHotkey, m_resetTimerHotkey, m_pauseTimerHotkey;
 };

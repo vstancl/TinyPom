@@ -38,13 +38,18 @@ SettingsDialog::SettingsDialog()
 	connect(timer, &PausableTimer::tick, this, &SettingsDialog::onTick);
 
 	// Hotkeys scannig signals
-	connect(ui->lineEditShowWindowHotkey, &HotkeyLineEdit::hotkeyChanged, this, &SettingsDialog::on_hotkeyShowWindow);
+	connect(ui->lineEditShowWindowHotkey, &HotkeyLineEdit::hotkeyChanged, this, &SettingsDialog::on_hotkeySet);
+	connect(ui->lineEditResetTimerHotkey, &HotkeyLineEdit::hotkeyChanged, this, &SettingsDialog::on_hotkeySet);
+	connect(ui->lineEditPauseTimerHotkey, &HotkeyLineEdit::hotkeyChanged, this, &SettingsDialog::on_hotkeySet);
+
 	registerShowWindowHotkey();
+	registerResetTimerHotkey();
+	registerPauseTimerHotkey();
 
 	// Fill hotkey edits
-	QSettings settings;
-	QKeySequence keySeqShowWindow = settings.value("hotkey/sequence/ShowWindow").value<QKeySequence>();
-	ui->lineEditShowWindowHotkey->setKeySequence(keySeqShowWindow);
+	ui->lineEditShowWindowHotkey->setKeySequence(m_settings.getShowWindowKeySequence());
+	ui->lineEditResetTimerHotkey->setKeySequence(m_settings.getResetTimerKeySequence());
+	ui->lineEditPauseTimerHotkey->setKeySequence(m_settings.getPauseTimerKeySequence());
 }
 
 SettingsDialog::~SettingsDialog()
@@ -59,8 +64,7 @@ void SettingsDialog::setVisible(bool visible)
 		showSettings->setText(tr("Hide Settings"));
 
 		// Fill dialog from settings
-		SettingsMaintainer settings;
-		ui->spinBoxTimer->setValue(settings.getTimerDurationMin());
+		ui->spinBoxTimer->setValue(m_settings.getTimerDurationMin());
 
 	}
 	else
@@ -78,12 +82,6 @@ void SettingsDialog::closeEvent(QCloseEvent* event)
 		return;
 
 	if (trayIcon->isVisible()) {
-// #TODO: On first time run show this message (and store to QSettings that it was shown
-// 		QMessageBox::information(this, tr("Systray"),
-// 			tr("The program will keep running in the "
-// 				"system tray. To terminate the program, "
-// 				"choose <b>Quit</b> in the context menu "
-// 				"of the system tray entry."));
 		hide();
 		event->ignore();
 	}
@@ -160,6 +158,24 @@ void SettingsDialog::on_pushButtonEditShowWindowHotkey_clicked()
 	ui->lineEditShowWindowHotkey->setScanning(true);
 }
 
+void SettingsDialog::on_pushButtonEditResetTimerHotkey_clicked()
+{
+	// Disable other windows scanning
+	disableHotkeysScanning();
+	/** \brief	Default constructor */
+	ui->lineEditResetTimerHotkey->setFocus();
+	ui->lineEditResetTimerHotkey->setScanning(true);
+}
+
+void SettingsDialog::on_pushButtonEditPauseTimerHotkey_clicked()
+{
+	// Disable other windows scanning
+	disableHotkeysScanning();
+	/** \brief	Default constructor */
+	ui->lineEditPauseTimerHotkey->setFocus();
+	ui->lineEditPauseTimerHotkey->setScanning(true);
+}
+
 void SettingsDialog::on_spinBoxTimer_valueChanged(int value)
 {
 	SettingsMaintainer settings;
@@ -173,14 +189,28 @@ void SettingsDialog::onTrayActivated(QSystemTrayIcon::ActivationReason reason)
 	}
 }
 
-void SettingsDialog::on_hotkeyShowWindow(const QList<int>& keys, Qt::KeyboardModifiers modifiers)
+void SettingsDialog::on_hotkeySet(const QList<int>& keys, Qt::KeyboardModifiers modifiers, HotkeyLineEdit* sender)
 {
 	QKeySequence keySeq(modifiers | keys.last());
 
-	QSettings settings;
-	settings.setValue("hotkey/sequence/ShowWindow", keySeq);
+	if(sender == ui->lineEditShowWindowHotkey)
+	{
+		m_settings.setShowWindowKeySequence(keySeq);
+		registerShowWindowHotkey();
 
-	registerShowWindowHotkey();
+	}
+
+	if (sender == ui->lineEditResetTimerHotkey)
+	{
+		m_settings.setResetTimerKeySequence(keySeq);
+		registerResetTimerHotkey();
+	}
+
+	if (sender == ui->lineEditPauseTimerHotkey)
+	{
+		m_settings.setPauseTimerKeySequence(keySeq);
+		registerPauseTimerHotkey();
+	}
 }
 
 void SettingsDialog::initializeTrayIcon()
@@ -255,11 +285,11 @@ void SettingsDialog::setIcon()
 
 void SettingsDialog::playSound()
 {
-	auto source = QUrl::fromLocalFile("C:/1 Personal/1 Projects/SmallApps/TinyPomodoro/res/mp3/campana-40773.mp3");
+	auto source = QUrl::fromLocalFile("C:/1_Personal/1_Projects/SmallApps/TinyPomodoro/res/mp3/campana-40773.mp3");
 //	auto source = QUrl("qrc:///mp3/mp3/campana-40773.mp3");
 	if (!source.isValid())
 		return;
-	
+
 	player->setSource(source);
  	audioOutput->setVolume(100);
  	player->play();
@@ -273,27 +303,9 @@ void SettingsDialog::disableHotkeysScanning()
 void SettingsDialog::registerShowWindowHotkey()
 {
 	// Reading the key sequence
-	QSettings settings;
-	QKeySequence keySeq = settings.value("hotkey/sequence/ShowWindow").value<QKeySequence>();
-
-	m_showWindowHotkey = registerHotKeyIfPresent(keySeq);
-}
-
-QSharedPointer<QHotkey> SettingsDialog::registerHotKeyIfPresent(const QKeySequence& keySequence)
-{
-	// Get the application pointer
-	QApplication* app = qobject_cast<QApplication*>(QApplication::instance());
-	if (!app)
-		return nullptr;
-
-	QSettings settings;
-	// #TODO add hotkey sequence combination reading from settings
-	QSharedPointer<QHotkey> hotkey(new QHotkey(keySequence, true, app));
-
-	qDebug() << "Is segistered:" << hotkey->isRegistered();
-
-	QObject::connect(hotkey.get(), &QHotkey::activated,
-		[&]() {
+	m_showWindowHotkey = registerHotKeyIfPresent(m_settings.getShowWindowKeySequence(),
+		[&]() 
+		{
 
 			if (this->isVisible())
 			{
@@ -306,7 +318,46 @@ QSharedPointer<QHotkey> SettingsDialog::registerHotKeyIfPresent(const QKeySequen
 				this->activateWindow();
 			}
 		}
+
 	);
+}
+
+void SettingsDialog::registerResetTimerHotkey()
+{
+	// Reading the key sequence
+	m_resetTimerHotkey = registerHotKeyIfPresent(m_settings.getResetTimerKeySequence(),
+		[&]()
+		{
+			this->onResetTimer();
+		}
+	);
+}
+
+void SettingsDialog::registerPauseTimerHotkey()
+{
+	// Reading the key sequence
+	m_pauseTimerHotkey = registerHotKeyIfPresent(m_settings.getPauseTimerKeySequence(),
+		[&]()
+		{
+			this->onPauseTimer();
+		}
+	);
+}
+
+QSharedPointer<QHotkey> SettingsDialog::registerHotKeyIfPresent(const QKeySequence& keySequence, std::function<void()> callbackFunction)
+{
+	// Get the application pointer
+	QApplication* app = qobject_cast<QApplication*>(QApplication::instance());
+	if (!app)
+		return nullptr;
+
+	QSettings settings;
+	// #TODO add hotkey sequence combination reading from settings
+	QSharedPointer<QHotkey> hotkey(new QHotkey(keySequence, true, app));
+
+	qDebug() << "Is segistered:" << hotkey->isRegistered();
+
+	QObject::connect(hotkey.get(), &QHotkey::activated, callbackFunction);
 
 	return hotkey;
 }

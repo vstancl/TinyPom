@@ -23,7 +23,7 @@ public:
 	QKeySequence keySequence() const;
 
 signals:
-	void hotkeyChanged(const QList<int>& keys, Qt::KeyboardModifiers modifiers);
+	void hotkeyChanged(const QList<int>& keys, Qt::KeyboardModifiers modifiers, HotkeyLineEdit *sender);
 
 protected:
 	void keyPressEvent(QKeyEvent* event) override;

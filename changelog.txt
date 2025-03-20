@@ -12,6 +12,10 @@ WIP:
 	- Do testing
 
 What should be done:
+- Show remaining time in the window
+- Be able to pin window on top
+
+Nice to have:
+- Skin
 - Play sound from resources or from app folder
 - Colored icon
-- Skin

@@ -19,7 +19,7 @@ HotkeyLineEdit::HotkeyLineEdit(QWidget* parent /*= nullptr*/)
 		if (text.isEmpty()) {
 			m_currentKeys.clear();
 			m_keyModifiers = Qt::NoModifier;
-			emit hotkeyChanged(m_currentKeys, m_keyModifiers);
+			emit hotkeyChanged(m_currentKeys, m_keyModifiers, this);
 		}
 		});
 }
@@ -94,7 +94,7 @@ void HotkeyLineEdit::keyPressEvent(QKeyEvent* event)
 	setText(keySequenceToString(modifiers, key));
 
 	// Emit the change signal
-	emit hotkeyChanged(m_currentKeys, modifiers);
+	emit hotkeyChanged(m_currentKeys, modifiers, this);
 
 	// Prevent default handling
 	event->accept();
