@@ -43,6 +43,8 @@ protected slots:
 	void on_pushButtonEditResetTimerHotkey_clicked();
 	void on_pushButtonEditPauseTimerHotkey_clicked();
 
+	void on_checkBoxPinOnTop_checkStateChanged(Qt::CheckState state);
+
 	void on_spinBoxTimer_valueChanged(int value);
 
 	void onTrayActivated(QSystemTrayIcon::ActivationReason reason);

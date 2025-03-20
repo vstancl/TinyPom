@@ -50,6 +50,14 @@ SettingsDialog::SettingsDialog()
 	ui->lineEditShowWindowHotkey->setKeySequence(m_settings.getShowWindowKeySequence());
 	ui->lineEditResetTimerHotkey->setKeySequence(m_settings.getResetTimerKeySequence());
 	ui->lineEditPauseTimerHotkey->setKeySequence(m_settings.getPauseTimerKeySequence());
+
+	// Set checkboxes
+	ui->checkBoxShowWindowOnPause->setCheckState(m_settings.getStayOnTop() ? Qt::Checked : Qt::Unchecked);
+	if (m_settings.getStayOnTop())
+	{
+		Qt::WindowFlags flags = windowFlags();
+		setWindowFlags(flags | Qt::WindowStaysOnTopHint);  // Add the flag
+	}
 }
 
 SettingsDialog::~SettingsDialog()
@@ -174,6 +182,23 @@ void SettingsDialog::on_pushButtonEditPauseTimerHotkey_clicked()
 	/** \brief	Default constructor */
 	ui->lineEditPauseTimerHotkey->setFocus();
 	ui->lineEditPauseTimerHotkey->setScanning(true);
+}
+
+void SettingsDialog::on_checkBoxPinOnTop_checkStateChanged(Qt::CheckState state)
+{
+	Qt::WindowFlags flags = windowFlags();
+	if (state == Qt::Checked)
+	{
+		m_settings.setStayOnTop(true);
+		setWindowFlags(flags | Qt::WindowStaysOnTopHint);  // Add the flag
+	}
+	else
+	{
+		m_settings.setStayOnTop(false);
+		setWindowFlags(flags & ~Qt::WindowStaysOnTopHint);  // Remove the flag
+	}
+
+	show();
 }
 
 void SettingsDialog::on_spinBoxTimer_valueChanged(int value)
@@ -305,7 +330,6 @@ void SettingsDialog::registerShowWindowHotkey()
 	m_showWindowHotkey = registerHotKeyIfPresent(m_settings.getShowWindowKeySequence(),
 		[&]() 
 		{
-			this->playSound();
 			if (this->isVisible())
 			{
 				this->hide();

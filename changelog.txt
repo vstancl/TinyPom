@@ -8,11 +8,12 @@ What is done:
 - Modifiable shortcut
 - Add shortcuts for reset timer and pause timer
 - Play sound from resources or from app folder
-
-WIP:
 - Be able to pin window on top
 
+WIP:
+
 What should be done:
+- Show window on pause if not visible
 - Show remaining time in the window
 
 Nice to have:

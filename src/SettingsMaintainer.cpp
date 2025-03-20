@@ -49,3 +49,15 @@ void SettingsMaintainer::setPauseTimerKeySequence(const QKeySequence& keySeq)
 	QSettings settings;
 	settings.setValue(m_pauseTimerHotkeySettingsKey, keySeq);
 }
+
+bool SettingsMaintainer::getStayOnTop() const
+{
+	QSettings settings;
+	return settings.value(m_stayOnTopSettingsKey, false).value<bool>();
+}
+
+void SettingsMaintainer::setStayOnTop(bool stay)
+{
+	QSettings settings;
+	settings.setValue(m_stayOnTopSettingsKey, stay);
+}
