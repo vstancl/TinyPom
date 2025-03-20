@@ -4,18 +4,17 @@ What is done:
 - Show settings window on double click on tray icon
 - Connect timer duration spin to actual object
 - Show current time
-
-WIP:
 - System shortcut
 - Modifiable shortcut
-	- Add shortcuts for reset timer and pause timer
-	- Do testing
+- Add shortcuts for reset timer and pause timer
+- Play sound from resources or from app folder
+
+WIP:
+- Be able to pin window on top
 
 What should be done:
 - Show remaining time in the window
-- Be able to pin window on top
 
 Nice to have:
 - Skin
-- Play sound from resources or from app folder
 - Colored icon

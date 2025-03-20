@@ -285,8 +285,7 @@ void SettingsDialog::setIcon()
 
 void SettingsDialog::playSound()
 {
-	auto source = QUrl::fromLocalFile("C:/1_Personal/1_Projects/SmallApps/TinyPomodoro/res/mp3/campana-40773.mp3");
-//	auto source = QUrl("qrc:///mp3/mp3/campana-40773.mp3");
+	auto source = QUrl("qrc:/mp3/mp3/campana-40773.mp3");
 	if (!source.isValid())
 		return;
 
@@ -306,7 +305,7 @@ void SettingsDialog::registerShowWindowHotkey()
 	m_showWindowHotkey = registerHotKeyIfPresent(m_settings.getShowWindowKeySequence(),
 		[&]() 
 		{
-
+			this->playSound();
 			if (this->isVisible())
 			{
 				this->hide();
