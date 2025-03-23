@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "SettingsDialog.h"
+#include "MainDialog.h"
 
 #include <QSystemTrayIcon>
 #include <QMessageBox>
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 
 	QApplication::setQuitOnLastWindowClosed(false);
 
-	SettingsDialog dialog;
+	MainDialog dialog;
 
 	return app.exec();
 }

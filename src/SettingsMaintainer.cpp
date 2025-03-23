@@ -61,3 +61,16 @@ void SettingsMaintainer::setStayOnTop(bool stay)
 	QSettings settings;
 	settings.setValue(m_stayOnTopSettingsKey, stay);
 }
+
+bool SettingsMaintainer::getShowOnTimerEnd() const
+{
+	QSettings settings;
+	return settings.value(m_showOnTimerEndSettingsKey, false).value<bool>();
+}
+
+void SettingsMaintainer::setShowOnTimerEnd(bool show)
+{
+	QSettings settings;
+	settings.setValue(m_showOnTimerEndSettingsKey, show);
+
+}

@@ -5,6 +5,7 @@
 #include <QHotkey>
 #include <QSettings>
 #include "SettingsMaintainer.h"
+#include <QPropertyAnimation>
 
 class PausableTimer;
 class QMediaPlayer;
@@ -12,18 +13,23 @@ class QAudioOutput;
 class HotkeyLineEdit;
 
 namespace Ui {
-	class SettingsDialog;
+	class MainDialog;
 }
 
-class SettingsDialog : public QDialog
+class SettingsWidget;
+
+class MainDialog : public QDialog
 {
 	Q_OBJECT
 
 public: 
-	SettingsDialog();
-	~SettingsDialog();
+	MainDialog();
+	~MainDialog();
 
 	void setVisible(bool visible) override;
+
+	void resetTimer() { onResetTimer(); }
+	void pauseTimer() { onPauseTimer(); }
 
 protected:
 	void closeEvent(QCloseEvent* event) override;
@@ -38,19 +44,14 @@ protected slots:
 	void on_pushButtonStartTimer_clicked();
 	void on_pushButtonPauseTimer_clicked();
 	void on_pushButtonExit_clicked();
-	
-	void on_pushButtonEditShowWindowHotkey_clicked();
-	void on_pushButtonEditResetTimerHotkey_clicked();
-	void on_pushButtonEditPauseTimerHotkey_clicked();
-
-	void on_checkBoxPinOnTop_checkStateChanged(Qt::CheckState state);
-
-	void on_spinBoxTimer_valueChanged(int value);
 
 	void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
+
+	void togglePanel();
 protected:
 
-	void on_hotkeySet(const QList<int>& keys, Qt::KeyboardModifiers modifiers, HotkeyLineEdit *sender);
+	void setStyling();
+
 
 	void initializeTrayIcon();
 
@@ -58,30 +59,25 @@ protected:
 	void connectUI();
 	void setIcon();
 	void playSound();
-	void disableHotkeysScanning();
 
-	void registerShowWindowHotkey();
-	void registerResetTimerHotkey();
-	void registerPauseTimerHotkey();
+	void showTime(bool show);
 
-
-	QSharedPointer<QHotkey> registerHotKeyIfPresent(const QKeySequence &keySequence, std::function<void()> callbackFunction);
 
 private:
-	Ui::SettingsDialog* ui;
+	Ui::MainDialog* ui;
 
-	QAction* resetTimer;
-	QAction* pauseTimer;
-	QAction* showSettings;
-	QAction* closeApp;
+	QAction* resetTimerAction;
+	QAction* pauseTimerAction;
+	QAction* showSettingsAction;
+	QAction* closeAppAction;
 
 	QSystemTrayIcon* trayIcon;
-
 	PausableTimer* timer;
 	QMediaPlayer* player;
 	QAudioOutput * audioOutput;
 
 	SettingsMaintainer m_settings;
 
-	QSharedPointer<QHotkey> m_showWindowHotkey, m_resetTimerHotkey, m_pauseTimerHotkey;
+	QPropertyAnimation* animation;
+
 };

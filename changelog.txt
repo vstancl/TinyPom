@@ -9,13 +9,18 @@ What is done:
 - Add shortcuts for reset timer and pause timer
 - Play sound from resources or from app folder
 - Be able to pin window on top
-
-WIP:
-
-What should be done:
 - Show window on pause if not visible
 - Show remaining time in the window
+- Added animatet settings panel
+
+WIP:
+- Replace shortcut editing button+edit combo just by button.
+- Skin - finalize
+	
+
+What should be done:
+- Tooltips
 
 Nice to have:
-- Skin
+
 - Colored icon
