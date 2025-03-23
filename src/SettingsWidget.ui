@@ -44,34 +44,25 @@
        </widget>
       </item>
       <item row="5" column="0">
-       <widget class="QPushButton" name="pushButtonEditShowWindowHotkey">
+       <widget class="HotkeyPushButton" name="pushButtonEditShowWindowHotkey">
         <property name="text">
          <string>Show Window</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="HotkeyLineEdit" name="lineEditShowWindowHotkey"/>
-      </item>
       <item row="6" column="0">
-       <widget class="QPushButton" name="pushButtonEditPauseTimerHotkey">
+       <widget class="HotkeyPushButton" name="pushButtonEditPauseTimerHotkey">
         <property name="text">
          <string>Pause Timer </string>
         </property>
        </widget>
       </item>
       <item row="7" column="0">
-       <widget class="QPushButton" name="pushButtonEditResetTimerHotkey">
+       <widget class="HotkeyPushButton" name="pushButtonEditResetTimerHotkey">
         <property name="text">
          <string>Reset Timer</string>
         </property>
        </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="HotkeyLineEdit" name="lineEditPauseTimerHotkey"/>
-      </item>
-      <item row="7" column="1">
-       <widget class="HotkeyLineEdit" name="lineEditResetTimerHotkey"/>
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_2">
@@ -101,9 +92,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>HotkeyLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>HotkeyLineEdit.h</header>
+   <class>HotkeyPushButton</class>
+   <extends>QPushButton</extends>
+   <header>hotkeypushbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

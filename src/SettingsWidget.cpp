@@ -1,6 +1,7 @@
 #include "SettingsWidget.h"
 #include "ui_SettingsWidget.h"
 #include "MainDialog.h"
+#include "HotkeyPushButton.h"
 
 SettingsWidget::SettingsWidget(QDialog* parent)
 	: ui(new Ui::SettingsWidget)
@@ -8,19 +9,28 @@ SettingsWidget::SettingsWidget(QDialog* parent)
 {
 	ui->setupUi(this);
 
+	ui->pushButtonEditShowWindowHotkey->setEmptyText("Set Show Window Shortcut");
+	ui->pushButtonEditShowWindowHotkey->setPrefixText("Show Window: ");
+
+	ui->pushButtonEditResetTimerHotkey->setEmptyText("Set Start/Reset Timer Shortcut");
+	ui->pushButtonEditResetTimerHotkey->setPrefixText("Start/Reset Timer: ");
+
+	ui->pushButtonEditPauseTimerHotkey->setEmptyText("Set Pause Timer Shortcut");
+	ui->pushButtonEditPauseTimerHotkey->setPrefixText("Pause Timer: ");
+
 	// Hotkeys scannig signals
-	connect(ui->lineEditShowWindowHotkey, &HotkeyLineEdit::hotkeyChanged, this, &SettingsWidget::on_hotkeySet);
-	connect(ui->lineEditResetTimerHotkey, &HotkeyLineEdit::hotkeyChanged, this, &SettingsWidget::on_hotkeySet);
-	connect(ui->lineEditPauseTimerHotkey, &HotkeyLineEdit::hotkeyChanged, this, &SettingsWidget::on_hotkeySet);
+	connect(ui->pushButtonEditShowWindowHotkey, &HotkeyPushButton::hotkeyChanged, this, &SettingsWidget::on_hotkeySet);
+	connect(ui->pushButtonEditResetTimerHotkey, &HotkeyPushButton::hotkeyChanged, this, &SettingsWidget::on_hotkeySet);
+	connect(ui->pushButtonEditPauseTimerHotkey, &HotkeyPushButton::hotkeyChanged, this, &SettingsWidget::on_hotkeySet);
 
 	registerShowWindowHotkey();
 	registerResetTimerHotkey();
 	registerPauseTimerHotkey();
 
 	// Fill hotkey edits
-	ui->lineEditShowWindowHotkey->setKeySequence(m_settings.getShowWindowKeySequence());
-	ui->lineEditResetTimerHotkey->setKeySequence(m_settings.getResetTimerKeySequence());
-	ui->lineEditPauseTimerHotkey->setKeySequence(m_settings.getPauseTimerKeySequence());
+	ui->pushButtonEditShowWindowHotkey->setKeySequence(m_settings.getShowWindowKeySequence());
+	ui->pushButtonEditResetTimerHotkey->setKeySequence(m_settings.getResetTimerKeySequence());
+	ui->pushButtonEditPauseTimerHotkey->setKeySequence(m_settings.getPauseTimerKeySequence());
 
 	// Set checkboxes
 	ui->checkBoxPinOnTop->setCheckState(m_settings.getStayOnTop() ? Qt::Checked : Qt::Unchecked);
@@ -42,8 +52,8 @@ void SettingsWidget::on_pushButtonEditShowWindowHotkey_clicked()
 	// Disable other windows scanning
 	disableHotkeysScanning();
 	/** \brief	Default constructor */
-	ui->lineEditShowWindowHotkey->setFocus();
-	ui->lineEditShowWindowHotkey->setScanning(true);
+// 	ui->lineEditShowWindowHotkey->setFocus();
+// 	ui->lineEditShowWindowHotkey->setScanning(true);
 }
 
 void SettingsWidget::on_pushButtonEditResetTimerHotkey_clicked()
@@ -51,8 +61,8 @@ void SettingsWidget::on_pushButtonEditResetTimerHotkey_clicked()
 	// Disable other windows scanning
 	disableHotkeysScanning();
 	/** \brief	Default constructor */
-	ui->lineEditResetTimerHotkey->setFocus();
-	ui->lineEditResetTimerHotkey->setScanning(true);
+// 	ui->lineEditResetTimerHotkey->setFocus();
+// 	ui->lineEditResetTimerHotkey->setScanning(true);
 }
 
 void SettingsWidget::on_pushButtonEditPauseTimerHotkey_clicked()
@@ -60,8 +70,8 @@ void SettingsWidget::on_pushButtonEditPauseTimerHotkey_clicked()
 	// Disable other windows scanning
 	disableHotkeysScanning();
 	/** \brief	Default constructor */
-	ui->lineEditPauseTimerHotkey->setFocus();
-	ui->lineEditPauseTimerHotkey->setScanning(true);
+// 	ui->lineEditPauseTimerHotkey->setFocus();
+// 	ui->lineEditPauseTimerHotkey->setScanning(true);
 }
 
 void SettingsWidget::on_checkBoxPinOnTop_checkStateChanged(Qt::CheckState state)
@@ -92,24 +102,24 @@ void SettingsWidget::on_spinBoxTimer_valueChanged(int value)
 	m_settings.setTimerDurationMin(value);
 }
 
-void SettingsWidget::on_hotkeySet(const QList<int>& keys, Qt::KeyboardModifiers modifiers, HotkeyLineEdit* sender)
+void SettingsWidget::on_hotkeySet(const QList<int>& keys, Qt::KeyboardModifiers modifiers, HotkeyPushButton* sender)
 {
 	QKeySequence keySeq(modifiers | keys.last());
 
-	if (sender == ui->lineEditShowWindowHotkey)
+	if (sender == ui->pushButtonEditShowWindowHotkey)
 	{
 		m_settings.setShowWindowKeySequence(keySeq);
 		registerShowWindowHotkey();
 
 	}
 
-	if (sender == ui->lineEditResetTimerHotkey)
+	if (sender == ui->pushButtonEditResetTimerHotkey)
 	{
 		m_settings.setResetTimerKeySequence(keySeq);
 		registerResetTimerHotkey();
 	}
 
-	if (sender == ui->lineEditPauseTimerHotkey)
+	if (sender == ui->pushButtonEditPauseTimerHotkey)
 	{
 		m_settings.setPauseTimerKeySequence(keySeq);
 		registerPauseTimerHotkey();
@@ -180,7 +190,7 @@ void SettingsWidget::registerPauseTimerHotkey()
 
 void SettingsWidget::disableHotkeysScanning()
 {
-	ui->lineEditShowWindowHotkey->setScanning(false);
+//	ui->lineEditShowWindowHotkey->setScanning(false);
 }
 
 QSharedPointer<QHotkey> SettingsWidget::registerHotKeyIfPresent(const QKeySequence& keySequence, std::function<void()> callbackFunction)

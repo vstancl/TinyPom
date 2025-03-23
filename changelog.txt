@@ -12,15 +12,14 @@ What is done:
 - Show window on pause if not visible
 - Show remaining time in the window
 - Added animatet settings panel
+- Replace shortcut editing button+edit combo just by button.
 
 WIP:
-- Replace shortcut editing button+edit combo just by button.
+- Functionality testing
 - Skin - finalize
-	
 
 What should be done:
 - Tooltips
 
 Nice to have:
-
 - Colored icon

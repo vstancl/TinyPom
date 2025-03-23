@@ -8,7 +8,7 @@ namespace Ui {
 	class SettingsWidget;
 }
 
-class HotkeyLineEdit;
+class HotkeyPushButton;
 class MainDialog;
 
 class SettingsWidget : public QWidget
@@ -32,7 +32,7 @@ protected slots:
 	void on_spinBoxTimer_valueChanged(int value);
 
 protected:
-	void on_hotkeySet(const QList<int>& keys, Qt::KeyboardModifiers modifiers, HotkeyLineEdit* sender);
+	void on_hotkeySet(const QList<int>& keys, Qt::KeyboardModifiers modifiers, HotkeyPushButton* sender);
 
 	void registerShowWindowHotkey();
 	void registerResetTimerHotkey();
