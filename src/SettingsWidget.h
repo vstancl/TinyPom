@@ -27,6 +27,7 @@ protected slots:
 	void on_pushButtonEditPauseTimerHotkey_clicked();
 
 	void on_checkBoxPinOnTop_checkStateChanged(Qt::CheckState state);
+	void on_checkBoxStartWithAppVisible_checkStateChanged(Qt::CheckState state);
 	void on_checkBoxShowWindowTimerEnd_checkStateChanged(Qt::CheckState state);
 
 	void on_spinBoxTimer_valueChanged(int value);
@@ -38,6 +39,7 @@ protected:
 	void registerResetTimerHotkey();
 	void registerPauseTimerHotkey();
 
+	void setStyling();
 
 	QSharedPointer<QHotkey> registerHotKeyIfPresent(const QKeySequence& keySequence, std::function<void()> callbackFunction);
 

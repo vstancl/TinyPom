@@ -4,7 +4,8 @@
 #include <QSystemTrayIcon>
 #include <QMessageBox>
 #include <QResource>
-
+#include <QFile>
+#include <QStyleFactory>
 
 int main(int argc, char** argv)
 {

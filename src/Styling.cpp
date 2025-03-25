@@ -1,67 +1,54 @@
 #include "Styling.h"
 #include <QDialog>
 
-void Styling::setButtonStyling(QPushButton* button, const QColor& borderColor)
+void Styling::setButtonStyling(QPushButton* button)
 {
-	if (!button) return; // Safety check
+	if (!button) 
+		return; // Safety check
 
-	// Convert QColor to a hex string
-	QString colorStr = borderColor.name(QColor::HexRgb);
+	QString styleSheet = R"(
+		QPushButton
+		{
+			background-color: rgb(66, 66, 66);
+			border: 1px solid #b5e5cf;
+			padding: 4px;
+		}
 
-	// Define the stylesheet with the dynamic border color
-	QString styleSheet = QString(
-		"QPushButton {"
-		"    border: 3px solid %1;"  // Dynamic border color
-		"    border-radius: 15px;"
-		"    background-color: %2;"
-		"    color: %3;"
-		"    font-family: 'Poppins';"  /* Use quotes around font names */
-		"    font-size: 18px;"
-		"    padding: 5px 16px;"
-		"    min-width: 120px;" /* Ensure button is wide enough */
-		"    min-height: 50px;" /* Ensure button height aligns with the border-radius */
-		"}"
-		"QPushButton:hover {"
-		"    background-color: #3b3b3b;"
-		"}"
-		"QPushButton:pressed {"
-		"    background-color: %4;"  // Separate color for pressed state
-		"    color: black;"
-		"}"
-	).arg(colorStr)
-		.arg(colorButtonBackground.name(QColor::HexRgb))
-		.arg(colorFont.name(QColor::HexRgb))
-		.arg(colorButtonPressedBackground.name(QColor::HexRgb));  // Use a new variable for pressed bg color
+		QPushButton:hover
+		{
+			background-color: rgb(115, 115, 115);
+			border: 1px solid #b5e5cf;
+		}
 
+		QPushButton:pressed
+		{
+			background-color: rgb(50, 50, 50);
+			border: 1px solid #d8e6d1;
+		}
 
-	// Apply the stylesheet to the button
+		QPushButton:checked
+		{
+			background-color: rgb(50, 50, 50);
+			border: 1px solid #d8e6d1;
+		}
+	)";
+
+	//rgb(170, 214, 160);
+	//rgb(255, 163, 132);
 	button->setStyleSheet(styleSheet);
 }
 
-void Styling::setDialogStyling(QDialog* dialog, const QColor& borderColor)
+void Styling::setWidgetStyling(QWidget* widget)
 {
-	if (!dialog) return; // Safety check
+	if (!widget) 
+		return; // Safety check
 
-	// Convert QColor to a hex string
-	QString colorStr = borderColor.name(QColor::HexRgb);
+	QString styleSheet = R"(
+		background-color: rgb(80, 80, 80);
+		font: 10pt "Segoe UI";
+		color: rgb(220, 220, 220);
+	)";
 
-	// Define the stylesheet with the dynamic border color
-	QString styleSheet = QString(
-		"QDialog {"
-		"    border: 3px solid %1;"  // Dynamic border color
-//		"    border-radius: 15px;"
-		"    background-color: %2;"
-		"    color: %3;"
-		"    font-family: 'Poppins';"  /* Use quotes around font names */
-		"    font-size: 18px;"
-		"    padding: 5px 16px;"
-		"}"
-	).arg(colorStr)
-		.arg(colorWindowBackground.name(QColor::HexRgb))
-		.arg(colorFont.name(QColor::HexRgb));
-
-
-	// Apply the stylesheet to the button
-	dialog->setStyleSheet(styleSheet);
+	widget->setStyleSheet(styleSheet);
 
 }

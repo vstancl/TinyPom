@@ -6,6 +6,9 @@
   <qresource prefix="sounds">
     <file>sounds/campana-40773.wav</file>
   </qresource>
+  <qresource prefix="styles">
+    <file>styles/style.qss</file>
+  </qresource>
   <qresource prefix="mp3">
     <file>mp3/campana-40773.mp3</file>
   </qresource>

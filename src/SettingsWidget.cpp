@@ -2,6 +2,7 @@
 #include "ui_SettingsWidget.h"
 #include "MainDialog.h"
 #include "HotkeyPushButton.h"
+#include "Styling.h"
 
 SettingsWidget::SettingsWidget(QDialog* parent)
 	: ui(new Ui::SettingsWidget)
@@ -34,12 +35,14 @@ SettingsWidget::SettingsWidget(QDialog* parent)
 
 	// Set checkboxes
 	ui->checkBoxPinOnTop->setCheckState(m_settings.getStayOnTop() ? Qt::Checked : Qt::Unchecked);
+	ui->checkBoxStartWithAppVisible->setCheckState(m_settings.getStartVisible() ? Qt::Checked : Qt::Unchecked);
 
 	ui->checkBoxShowWindowTimerEnd->setCheckState(m_settings.getShowOnTimerEnd() ? Qt::Checked : Qt::Unchecked);
 
 	// Fill dialog from settings
 	ui->spinBoxTimer->setValue(m_settings.getTimerDurationMin());
 
+	setStyling();
 }
 
 SettingsWidget::~SettingsWidget()
@@ -89,7 +92,13 @@ void SettingsWidget::on_checkBoxPinOnTop_checkStateChanged(Qt::CheckState state)
 	}
 
 	// #Todo - call parent window
-	mainDialog->show();
+// 	if(mainDialog)
+// 		mainDialog->show();
+}
+
+void SettingsWidget::on_checkBoxStartWithAppVisible_checkStateChanged(Qt::CheckState state)
+{
+	m_settings.setStartVisible(state == Qt::Checked);
 }
 
 void SettingsWidget::on_checkBoxShowWindowTimerEnd_checkStateChanged(Qt::CheckState state)
@@ -186,6 +195,14 @@ void SettingsWidget::registerPauseTimerHotkey()
 			mainDialog->pauseTimer();
 		}
 	);
+}
+
+void SettingsWidget::setStyling()
+{
+	Styling::setWidgetStyling(this);
+	Styling::setButtonStyling(ui->pushButtonEditPauseTimerHotkey);
+	Styling::setButtonStyling(ui->pushButtonEditResetTimerHotkey);
+	Styling::setButtonStyling(ui->pushButtonEditShowWindowHotkey);
 }
 
 void SettingsWidget::disableHotkeysScanning()

@@ -27,7 +27,7 @@ MainDialog::MainDialog()
 	ui->horizontalLayout->setSpacing(0);
 	ui->horizontalLayout->setSizeConstraint(QLayout::SetFixedSize);
 	
-//	setStyling();
+	setStyling();
 
 	player = new QMediaPlayer(this);
  	audioOutput = new QAudioOutput();
@@ -48,11 +48,13 @@ MainDialog::MainDialog()
 	if (m_settings.getStayOnTop())
 	{
 		Qt::WindowFlags flags = windowFlags();
-		setWindowFlags(flags | Qt::WindowStaysOnTopHint);  // Add the flag
+		setWindowFlags(flags | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);  // Add the flag
 	}
 
 	// Expandable right panel
 	ui->settingsWidget->setFixedWidth(0);  // Initially collapsed
+
+	qDebug() << "Button Effective StyleSheet: " << ui->pushButtonStartTimer->styleSheet();
 
 	// Animation
 	animation = new QPropertyAnimation(ui->settingsWidget, "maximumWidth");
@@ -60,6 +62,9 @@ MainDialog::MainDialog()
 	animation->setEasingCurve(QEasingCurve::InOutQuad);
 
 	connect(ui->pushButtonShowSettings, &QPushButton::clicked, this, &MainDialog::togglePanel);
+
+	if (m_settings.getStartVisible())
+		show();
 }
 
 MainDialog::~MainDialog()
@@ -186,34 +191,13 @@ void MainDialog::togglePanel()
 
 void MainDialog::setStyling()
 {
-	Styling::setDialogStyling(this, "#888a85");
+	Styling::setWidgetStyling(this);
 
-// 	QString borderColor = "#FF5733";  // Example border color
-// 	QString backgroundColor = "#ffffff";  // Example background color
-// 	QString textColor = "#000000";  // Example text color
-// 
-// 	QString styleSheet = QString(
-// 		"QDialog {"
-// 		"    border: 3px solid %1;"
-// 		"    border-radius: 15px;"
-// 		"    background-color: %2;"
-// 		"	 background-color: transparent;"
-// 		"    color: %3;"
-// 		"    font-family: 'Poppins', sans-serif;"
-// 		"    font-size: 18px;"
-// 		"    padding: 5px 16px;"
-// 		"}"
-// 	).arg(borderColor)  // borderColor is a variable containing the color
-// 		.arg(backgroundColor)  // backgroundColor is a variable containing the color
-// 		.arg(textColor);  // textColor is a variable containing the color
-
-	// Apply the stylesheet to the dialog
-//	setStyleSheet(styleSheet);  // Equivalent to this->setStyleSheet(styleSheet);
-
-	Styling::setButtonStyling(ui->pushButtonStartTimer, "#8ae234");
-	Styling::setButtonStyling(ui->pushButtonPauseTimer, "#729fcf");
-	Styling::setButtonStyling(ui->pushButtonHide, "#fcaf3e");
-	Styling::setButtonStyling(ui->pushButtonExit, "#ad7fa8");
+	Styling::setButtonStyling(ui->pushButtonStartTimer);
+	Styling::setButtonStyling(ui->pushButtonPauseTimer);
+	Styling::setButtonStyling(ui->pushButtonHide);
+	Styling::setButtonStyling(ui->pushButtonExit);
+	Styling::setButtonStyling(ui->pushButtonShowSettings);
 }
 
 void MainDialog::initializeTrayIcon()

@@ -11,8 +11,9 @@ What is done:
 - Be able to pin window on top
 - Show window on pause if not visible
 - Show remaining time in the window
-- Added animatet settings panel
-- Replace shortcut editing button+edit combo just by button.
+- Added animated settings panel
+- Replace shortcut editing button + edit combo just by button.
+- Start visible option added.
 
 WIP:
 - Functionality testing
@@ -20,6 +21,7 @@ WIP:
 
 What should be done:
 - Tooltips
+- Disable hotkey when detecting new one...
 
 Nice to have:
 - Colored icon

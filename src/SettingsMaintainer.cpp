@@ -62,6 +62,18 @@ void SettingsMaintainer::setStayOnTop(bool stay)
 	settings.setValue(m_stayOnTopSettingsKey, stay);
 }
 
+bool SettingsMaintainer::getStartVisible() const
+{
+	QSettings settings;
+	return settings.value(m_startVisibleOnStartSettingsKey, true).value<bool>();
+}
+
+void SettingsMaintainer::setStartVisible(bool visible)
+{
+	QSettings settings;
+	settings.setValue(m_startVisibleOnStartSettingsKey, visible);
+}
+
 bool SettingsMaintainer::getShowOnTimerEnd() const
 {
 	QSettings settings;
