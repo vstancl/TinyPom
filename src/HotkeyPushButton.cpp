@@ -2,6 +2,8 @@
 
 #include <QDebug>
 #include <QKeyEvent>
+#include <QApplication>
+
 
 HotkeyPushButton::HotkeyPushButton(QWidget* parent)
 	: QPushButton("Set Hotkey", parent), m_recording(false)
@@ -79,6 +81,22 @@ void HotkeyPushButton::stopRecording()
 	m_recording = false;
 }
 
+void HotkeyPushButton::resendKey(Qt::Key key, Qt::KeyboardModifiers modifiers)
+{
+	QWidget* receiver = QApplication::focusWidget(); // Get the current focused widget
+	if (!receiver) return; // Ensure there's a valid receiver
+
+	// Create and post a new key event
+	QKeyEvent* event = new QKeyEvent(QEvent::KeyPress, key, modifiers);
+	QApplication::postEvent(receiver, event);
+}
+
+void HotkeyPushButton::resendKey()
+{
+	if (isValid())
+		resendKey(Qt::Key(m_currentKeys.front()), m_keyModifiers);
+}
+
 void HotkeyPushButton::keyPressEvent(QKeyEvent* event) {
 	if (!m_recording) {
 		QPushButton::keyPressEvent(event);
@@ -86,17 +104,25 @@ void HotkeyPushButton::keyPressEvent(QKeyEvent* event) {
 	}
 
 	int key = event->key();
-	if (key == Qt::Key_Escape) {  // Cancel recording
+	if (key == Qt::Key_Escape) 
+	{  
+		// Emit the change signal with current settigns...
+		if(isValid())
+			emit hotkeyChanged(m_currentKeys, m_keyModifiers, this);
+
 		stopRecording();
 	}
-	else {
+	else 
+	{
 		// Get the pressed key
-		int key = event->key();
 		Qt::KeyboardModifiers modifiers = event->modifiers();
+
+		qDebug() << key;
 
 		// Ignore modifier keys when pressed alone
 		if (key == Qt::Key_Control || key == Qt::Key_Shift ||
 			key == Qt::Key_Alt || key == Qt::Key_Meta) {
+			QPushButton::keyPressEvent(event);
 			return;
 		}
 

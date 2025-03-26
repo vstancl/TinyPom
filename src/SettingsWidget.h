@@ -19,13 +19,7 @@ public:
 	SettingsWidget(QDialog *parent);
 	~SettingsWidget();
 
-	void disableHotkeysScanning();
-
 protected slots:
-	void on_pushButtonEditShowWindowHotkey_clicked();
-	void on_pushButtonEditResetTimerHotkey_clicked();
-	void on_pushButtonEditPauseTimerHotkey_clicked();
-
 	void on_checkBoxPinOnTop_checkStateChanged(Qt::CheckState state);
 	void on_checkBoxStartWithAppVisible_checkStateChanged(Qt::CheckState state);
 	void on_checkBoxShowWindowTimerEnd_checkStateChanged(Qt::CheckState state);
@@ -36,10 +30,20 @@ protected:
 	void on_hotkeySet(const QList<int>& keys, Qt::KeyboardModifiers modifiers, HotkeyPushButton* sender);
 
 	void registerShowWindowHotkey();
+
+	void unregisterShowWindowHotkey();
+
 	void registerResetTimerHotkey();
+
+	void unregisterResetTimerHotkey();
+
 	void registerPauseTimerHotkey();
 
+	void unregisterPauseTimerHotkey();
+
 	void setStyling();
+
+	bool hotkeysEnabled() const;
 
 	QSharedPointer<QHotkey> registerHotKeyIfPresent(const QKeySequence& keySequence, std::function<void()> callbackFunction);
 

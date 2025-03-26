@@ -1,3 +1,7 @@
+/************************************************************************/
+/*                                                                      */
+/************************************************************************/
+
 #include "MainDialog.h"
 #include "ui_MainDialog.h"
 
@@ -63,6 +67,8 @@ MainDialog::MainDialog()
 
 	connect(ui->pushButtonShowSettings, &QPushButton::clicked, this, &MainDialog::togglePanel);
 
+	updatePauseButtonState();
+
 	if (m_settings.getStartVisible())
 		show();
 }
@@ -82,7 +88,6 @@ void MainDialog::setVisible(bool visible)
 	else
 	{
 		showSettingsAction->setText(tr("Show Settings"));
-		ui->settingsWidget->disableHotkeysScanning();
 	}
 
 	QDialog::setVisible(visible);
@@ -101,16 +106,25 @@ void MainDialog::closeEvent(QCloseEvent* event)
 
 void MainDialog::onResetTimer()
 {
-	showTime(true);
-
 	SettingsMaintainer settings;
 	timer->setDurationMinutes(settings.getTimerDurationMin());
 	timer->start();
 	pauseTimerAction->setEnabled(true);
+
+	updatePauseButtonState();
+
+	// Update time label text and show it
+	auto timeString = PausableTimer::formatTime(60 * 1000 * settings.getTimerDurationMin());
+	ui->labelCurrentTime->setText(timeString);
+
+	showTime(true);
 }
 
 void MainDialog::onPauseTimer()
 {
+	if (!timer->isStarted())
+		return;
+
 	if (timer->isPaused())
 	{
 		ui->pushButtonPauseTimer->setText(tr("Pause"));
@@ -123,6 +137,17 @@ void MainDialog::onPauseTimer()
 	}
 }
 
+void MainDialog::onStopTimer()
+{
+	timer->stop();
+
+	updatePauseButtonState();
+
+	showTime(false);
+	pauseTimerAction->setEnabled(false);
+	trayIcon->setToolTip("");
+}
+
 void MainDialog::onShowSettings()
 {
 	if (this->isVisible())
@@ -133,6 +158,8 @@ void MainDialog::onShowSettings()
 
 void MainDialog::onTimeout()
 {
+	updatePauseButtonState();
+
 	if(m_settings.getShowOnTimerEnd() && !isVisible())
 		show();
 
@@ -165,6 +192,11 @@ void MainDialog::on_pushButtonPauseTimer_clicked()
 	onPauseTimer();
 }
 
+void MainDialog::on_pushButtonStopTimer_clicked()
+{
+	onStopTimer();
+}
+
 void MainDialog::on_pushButtonExit_clicked()
 {
 	QCoreApplication::quit();
@@ -195,9 +227,15 @@ void MainDialog::setStyling()
 
 	Styling::setButtonStyling(ui->pushButtonStartTimer);
 	Styling::setButtonStyling(ui->pushButtonPauseTimer);
+	Styling::setButtonStyling(ui->pushButtonStopTimer);
 	Styling::setButtonStyling(ui->pushButtonHide);
 	Styling::setButtonStyling(ui->pushButtonExit);
 	Styling::setButtonStyling(ui->pushButtonShowSettings);
+}
+
+void MainDialog::updatePauseButtonState()
+{
+	ui->pushButtonPauseTimer->setEnabled(timer->isStarted());
 }
 
 void MainDialog::initializeTrayIcon()

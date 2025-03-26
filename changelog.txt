@@ -14,14 +14,15 @@ What is done:
 - Added animated settings panel
 - Replace shortcut editing button + edit combo just by button.
 - Start visible option added.
+- Tooltips
 
 WIP:
 - Functionality testing
 - Skin - finalize
 
 What should be done:
-- Tooltips
-- Disable hotkey when detecting new one...
+- Boiler plates
+- License file
 
 Nice to have:
 - Colored icon

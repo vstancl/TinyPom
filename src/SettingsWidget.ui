@@ -25,6 +25,9 @@
      </item>
      <item>
       <widget class="QSpinBox" name="spinBoxTimer">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set timer interval (in minutes)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="suffix">
         <string> min</string>
        </property>
@@ -43,6 +46,9 @@
    </item>
    <item>
     <widget class="QCheckBox" name="checkBoxShowWindowTimerEnd">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Should app window become visible when timer ends?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Show Window On Timer End</string>
      </property>
@@ -50,6 +56,9 @@
    </item>
    <item>
     <widget class="QCheckBox" name="checkBoxStartWithAppVisible">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Should app window be visible when application starts?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Start App Visible</string>
      </property>
@@ -57,6 +66,9 @@
    </item>
    <item>
     <widget class="QCheckBox" name="checkBoxPinOnTop">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pin application window on top (above another applications). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Pin On Top</string>
      </property>
@@ -71,22 +83,31 @@
    </item>
    <item>
     <widget class="HotkeyPushButton" name="pushButtonEditShowWindowHotkey">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set global keyboard shortcut for showing application window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Show Window</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="HotkeyPushButton" name="pushButtonEditPauseTimerHotkey">
+    <widget class="HotkeyPushButton" name="pushButtonEditResetTimerHotkey">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set global keyboard shortcut for resetting timer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
-      <string>Pause Timer </string>
+      <string>Reset Timer</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="HotkeyPushButton" name="pushButtonEditResetTimerHotkey">
+    <widget class="HotkeyPushButton" name="pushButtonEditPauseTimerHotkey">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set global keyboard shortcut for pausing timer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
-      <string>Reset Timer</string>
+      <string>Pause Timer </string>
      </property>
     </widget>
    </item>

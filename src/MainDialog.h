@@ -31,18 +31,22 @@ public:
 	void resetTimer() { onResetTimer(); }
 	void pauseTimer() { onPauseTimer(); }
 
+	void enableHotkeys(bool enable);
+
 protected:
 	void closeEvent(QCloseEvent* event) override;
 
 protected slots:
 	void onResetTimer();
 	void onPauseTimer();
+	void onStopTimer();
 	void onShowSettings();
 	void onTimeout();
 	void onTick(int elapsedTime, int remainingTime);
 	void on_pushButtonHide_clicked();
 	void on_pushButtonStartTimer_clicked();
 	void on_pushButtonPauseTimer_clicked();
+	void on_pushButtonStopTimer_clicked();
 	void on_pushButtonExit_clicked();
 
 	void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
@@ -52,6 +56,7 @@ protected:
 
 	void setStyling();
 
+	void updatePauseButtonState();
 
 	void initializeTrayIcon();
 

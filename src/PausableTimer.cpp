@@ -7,6 +7,8 @@ PausableTimer::PausableTimer(int duration, QObject* parent /*= nullptr*/)
 	, m_totalDuration(duration)
 	, m_remainingTime(duration)
 	, m_tickDuration(1000)
+	, m_paused(false)
+	, m_started(true)
 {
 	m_timer.setSingleShot(true);
 	connect(&m_timer, &QTimer::timeout, this, &PausableTimer::on_timeout);
@@ -30,6 +32,7 @@ void PausableTimer::start(int duration /*= -1*/)
 		stop();
 
 	m_paused = false;
+	m_started = true;
 
 	m_startTime = QDateTime::currentMSecsSinceEpoch();
 	m_timer.start(m_remainingTime);
@@ -41,6 +44,8 @@ void PausableTimer::start(int duration /*= -1*/)
 void PausableTimer::stop()
 {
 	m_paused = true;
+	m_started = false;
+
 	m_remainingTime = m_totalDuration;
 	m_timer.stop();
 	m_tickTimer.stop();
@@ -50,7 +55,7 @@ void PausableTimer::pause()
 {
 	m_paused = m_timer.isActive();
 
-	if (m_timer.isActive()) {
+	if (m_paused) {
 		m_remainingTime -= (QDateTime::currentMSecsSinceEpoch() - m_startTime);
 		qDebug() << "Timer pause. Remaining time: " << m_remainingTime;
 		m_timer.stop();
@@ -64,6 +69,11 @@ void PausableTimer::resume()
 		return;
 	qDebug() << "Timer resume. Remaining time: " << m_remainingTime;
 	start(m_remainingTime);
+}
+
+bool PausableTimer::isStarted() const
+{
+	return m_started;
 }
 
 bool PausableTimer::isPaused() const

@@ -18,6 +18,10 @@ public:
 
 	void setKeySequence(const QKeySequence& keys);
 
+	void resendKey();
+
+	bool isRecording() const { return m_recording; }
+
 signals:
 	void hotkeyChanged(const QList<int>& keys, Qt::KeyboardModifiers modifiers, HotkeyPushButton* sender);
 
@@ -33,6 +37,8 @@ private slots:
 private:
 	void startRecording();
 	void stopRecording();
+
+	void resendKey(Qt::Key key, Qt::KeyboardModifiers modifiers);
 
 private:
 	bool m_recording;

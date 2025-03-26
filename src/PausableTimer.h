@@ -17,6 +17,7 @@ public:
 
 	void resume();
 
+	bool isStarted() const;
 	bool isPaused() const;
 
 	void setTickDurationMSec(int tickDuration) { m_tickDuration = tickDuration; }
@@ -34,7 +35,7 @@ signals:
 
 
 private:
-	bool m_paused;
+	bool m_paused, m_started;
 	QTimer m_timer, m_tickTimer;
 	qint64 m_startTime = 0;
 	int m_totalDuration;
