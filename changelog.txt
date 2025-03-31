@@ -17,11 +17,12 @@
 - Tooltips
 - Boiler plates
 - License file
+- installation process
 
 WIP:
 - Skin - finalize
 
 What should be done:
 
+
 Nice to have:
-- Colored icon

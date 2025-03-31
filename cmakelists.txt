@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 
+cmake_policy(SET CMP0177 NEW)
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan_version.cmake)
 
 
@@ -142,5 +144,37 @@ endif()
 message(STATUS "Include directories: ${CONAN_INCLUDE_DIRS}")
 
 # Installation (optional)
-install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ".")
 
+file(GLOB_RECURSE RELEASE_DLLS "${CMAKE_BINARY_DIR}/../lib/*.dll")
+list(FILTER RELEASE_DLLS EXCLUDE REGEX ".*d\\.dll$")  # Exclude debug DLLs
+
+
+foreach(DLL ${RELEASE_DLLS})
+    # Get the relative path from the original 'lib' directory
+    file(RELATIVE_PATH REL_PATH "${CMAKE_BINARY_DIR}/../lib" "${DLL}")
+
+    # Extract only the directory path (without the filename)
+    get_filename_component(REL_DIR "${REL_PATH}" DIRECTORY)
+
+    # Install DLLs into the correct subdirectory under 'bin/'
+    install(FILES "${DLL}" DESTINATION "./${REL_DIR}")
+endforeach()
+
+#--------------------------------------------------------------------------------------------------------------
+set(CPACK_PACKAGE_NAME "TinyPom")
+set(CPACK_PACKAGE_VERSION "0.8.0")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Small pomodoro technique tracking timer")
+set(CPACK_PACKAGE_VENDOR "SchtutsleeCzech")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/License.txt") 
+set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md") 
+
+# set(CPACK_GENERATOR "NSIS") # Windows EXE Installer
+# set(CPACK_GENERATOR "WIX") # Windows MSI Installer (requires WiX)
+# set(CPACK_GENERATOR "DragNDrop") # macOS DMG
+# set(CPACK_GENERATOR "DEB") # Linux .deb package
+# set(CPACK_GENERATOR "RPM") # Linux .rpm package
+
+set(CPACK_GENERATOR "NSIS;ZIP") # Creates both an installer and a ZIP file
+
+include(CPack)

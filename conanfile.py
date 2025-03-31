@@ -26,7 +26,8 @@ class TinyPom(ConanFile):
         #self.options["qt"].with_gstreamer = True
 
     def imports(self):
-        bin_folder = "../build/bin/" + str(self.settings.build_type);
+        bin_folder = "../build/bin/" + str(self.settings.build_type)
+        lib_folder = "../lib/" # Lib folder is used for easier creation of the installation package...
 
         if self.settings.build_type == "Debug":
             suffix = "d"
@@ -44,6 +45,7 @@ class TinyPom(ConanFile):
         ]
         for dll in qt_dlls:
             self.copy(dll, bin_folder, "bin")
+            self.copy(dll, lib_folder, "bin")
 
         # Copy Qt Multimedia Plugins (corrected path)
         #self.copy("*.dll", dst=bin_folder + "/plugins/multimedia", src="plugins/multimedia")            
@@ -55,8 +57,12 @@ class TinyPom(ConanFile):
         
         for dll in qt_multimedia_plugin_dll:
             self.copy(dll, dst=bin_folder + "/plugins/multimedia/", src="plugins/multimedia")
+            self.copy(dll, dst=lib_folder + "/plugins/multimedia/", src="plugins/multimedia")
         
         # Copy the correct platform plugin
         self.copy("qwindows" + suffix + ".dll", dst=bin_folder + "/plugins/platforms/", src="plugins/platforms/")  # Windows
+        self.copy("qwindows" + suffix + ".dll", dst=lib_folder + "/plugins/platforms/", src="plugins/platforms/")  # Windows
+        
         self.copy("libqxcb.so", bin_folder + "/plugins/platforms/", "bin/plugins/platforms/")  # Linux (if applicable)
+        self.copy("libqxcb.so", lib_folder + "/plugins/platforms/", "bin/plugins/platforms/")  # Linux (if applicable)
         
