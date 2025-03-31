@@ -1,7 +1,15 @@
+/************************************************************************/
+/* (c) 2025 Vit Stancl <stancl.vit on gmail>								*/
+/************************************************************************/
+
 #pragma once
 
 #include <QPushButton>
 
+/** \brief	This checkable button is used for hotkey obtaining. After press (setting to the "ckecked" state it waits for some
+			usable keys combination and than it emmits the hotkeyChanged signal. If Esc is pressed, the waiting state is changed 
+			to the normal and the signal is emmited with the current keys combination (if exists). 
+*/
 class HotkeyPushButton : public QPushButton {
 	Q_OBJECT
 
@@ -10,14 +18,18 @@ public:
 
 	QKeySequence keySequence() const;
 
+	//! Set text displayed when no keys combination is set yet.
 	void setEmptyText(const QString& text);
 
+	//! Set text displayed in front of the keys combination (The result is something like this: "Show Window: Ctrl-Alt-W").
 	void setPrefixText(const QString& text);
 
+	//! Is currently stored key combination valid?
 	bool isValid() const;
 
 	void setKeySequence(const QKeySequence& keys);
 
+	//! If we are not in the state when the hotkeys are enabled but are pressed, we will postpone them back to the system.
 	void resendKey();
 
 	bool isRecording() const { return m_recording; }

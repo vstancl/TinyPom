@@ -1,3 +1,7 @@
+/************************************************************************/
+/* (c) 2025 Vit Stancl <stancl.vit on gmail>								*/
+/************************************************************************/
+
 #include "SettingsWidget.h"
 #include "ui_SettingsWidget.h"
 #include "MainDialog.h"

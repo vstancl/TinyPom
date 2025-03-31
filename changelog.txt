@@ -1,4 +1,4 @@
-What is done:
+ What is done:
 - Store settings to QSettings
 - Close app on Close button in SW.
 - Show settings window on double click on tray icon
@@ -15,14 +15,13 @@ What is done:
 - Replace shortcut editing button + edit combo just by button.
 - Start visible option added.
 - Tooltips
+- Boiler plates
+- License file
 
 WIP:
-- Functionality testing
 - Skin - finalize
 
 What should be done:
-- Boiler plates
-- License file
 
 Nice to have:
 - Colored icon

@@ -1,8 +1,13 @@
+/************************************************************************/
+/* (c) 2025 Vit Stancl <stancl.vit on gmail>								*/
+/************************************************************************/
+
 #pragma once
 
 #include <QString>
 #include <QKeySequence>
 
+/** \brief	The settings maintainer. Small wrapper class around the QSettings - just for the simplification of the calls */
 class SettingsMaintainer
 {
 public:

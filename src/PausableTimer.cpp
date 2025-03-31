@@ -1,3 +1,7 @@
+/************************************************************************/
+/* (c) 2025 Vit Stancl <stancl.vit on gmail>								*/
+/************************************************************************/
+
 #include "PausableTimer.h"
 #include <QDateTime>
 #include <QDebug>
@@ -15,14 +19,14 @@ PausableTimer::PausableTimer(int duration, QObject* parent /*= nullptr*/)
 	connect(&m_tickTimer, &QTimer::timeout, this, &PausableTimer::on_updateTick);
 }
 
-void PausableTimer::setDuration(int duration)
+void PausableTimer::setDurationMS(int duration)
 {
 	m_totalDuration = duration;
 }
 
 void PausableTimer::setDurationMinutes(int duration)
 {
-	setDuration(60 * 1000 * duration);
+	setDurationMS(60 * 1000 * duration);
 }
 
 void PausableTimer::start(int duration /*= -1*/)

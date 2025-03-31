@@ -1,13 +1,33 @@
+/************************************************************************/
+/* (c) 2025 Vit Stancl <stancl.vit on gmail>								*/
+/************************************************************************/
+
 #pragma once
 
 #include<QTimer>
 
+/** \brief	A pausable timer. Normal Qt timer is "one-shot" thing. This timer can be paused-resumed and additional timer is used to 
+			generate "ticking"
+*/
 class PausableTimer : public QObject {
 	Q_OBJECT
 public:
 	PausableTimer(int duration, QObject* parent = nullptr);
 
-	void setDuration(int duration);
+	/**
+	 * \brief	Sets duration in milliseconds
+	 *
+	 * \param 	duration	The duration.
+	 */
+
+	void setDurationMS(int duration);
+
+	/**
+	 * \brief	Sets duration in minutes
+	 *
+	 * \param 	duration	The duration.
+	 */
+
 	void setDurationMinutes(int duration);
 
 	void start(int duration = -1);

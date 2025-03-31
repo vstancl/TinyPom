@@ -7,6 +7,12 @@
 #include "SettingsMaintainer.h"
 #include <QPropertyAnimation>
 
+/************************************************************************/
+/* (c) 2025 Vit Stancl <stancl.vit on gmail>								*/
+/************************************************************************/
+
+#pragma once
+
 class PausableTimer;
 class QMediaPlayer;
 class QAudioOutput;
@@ -18,6 +24,11 @@ namespace Ui {
 
 class SettingsWidget;
 
+/** \brief	Main application dialog. Here is all the magic done:  
+ *		- Tray icon initialization and handling  
+ *		- Timer actions processing  
+ *		- Showing and hiding the settings widget
+*/
 class MainDialog : public QDialog
 {
 	Q_OBJECT
@@ -29,9 +40,8 @@ public:
 	void setVisible(bool visible) override;
 
 	void resetTimer() { onResetTimer(); }
-	void pauseTimer() { onPauseTimer(); }
 
-	void enableHotkeys(bool enable);
+	void pauseTimer() { onPauseTimer(); }
 
 protected:
 	void closeEvent(QCloseEvent* event) override;

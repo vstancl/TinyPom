@@ -1,3 +1,7 @@
+/************************************************************************/
+/* (c) 2025 Vit Stancl <stancl.vit on gmail>								*/
+/************************************************************************/
+
 #pragma once
 
 #include <QWidget>
@@ -11,6 +15,8 @@ namespace Ui {
 class HotkeyPushButton;
 class MainDialog;
 
+/** \brief	The settings widget. Not only settings, but also the hotkeys initialization and handling.
+*/
 class SettingsWidget : public QWidget
 {
 	Q_OBJECT
